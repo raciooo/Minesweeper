@@ -15,11 +15,17 @@ window.onload = function() {
 }
 
 function setMines() {
-  minesLocation.push("2-2");
-  minesLocation.push("2-3");
-  minesLocation.push("5-6");
-  minesLocation.push("3-4");
-  minesLocation.push("1-1");
+  let minesLeft = minesCount; 
+  while (minesLeft > 0) {
+    let r = Math.floor(Math.random() * rows);
+    let c = Math.floor(Math.random() * columns);
+    let id = r.toString() + "-" + c.toString();
+
+    if (!minesLocation.includes(id)) {
+      minesLocation.push(id);
+      minesLeft -= 1;
+    }
+  }
 }
 
 function startGame() {
@@ -55,6 +61,9 @@ function setFlag() {
 
 
 function clickTile() {
+  if (gameOver || this.classList.contains("tile-clicked")) {
+    return;
+  }
 
   let tile = this;
   if (flagEnabled) {
@@ -96,6 +105,13 @@ function checkMine(row, column) {
   if (row < 0 || row >= rows || column < 0 || column >= columns) {
     return;
   }
+  if (board[row][column].classList.contains("tile-clicked")) {
+    return;
+  }
+
+  board[row][column].classList.add("tile-clicked")
+  tilesClicked += 1;
+
   let minesFound = 0;
 
   // top 3
@@ -107,24 +123,40 @@ function checkMine(row, column) {
   minesFound += checkTile(row, column+1);     // right
 
   minesFound += checkTile(row+1, column-1);    //bottom left
-  minesFound += checkTile(row+1, column); //bottom
-  minesFound += checkTile(row+1, column+1) //bottom right
+  minesFound += checkTile(row+1, column);      //bottom
+  minesFound += checkTile(row+1, column+1)     //bottom right
 
-  console.log("Mines found: " + minesFound);
   if (minesFound > 0) {
     board[row][column].innerText = minesFound;
     board[row][column].classList.add("x" + minesFound.toString());
-    console.log("Mines found: " + minesFound);
   }
+  else {
+    //top 3
+    checkMine(row-1, column-1);  //top left
+    checkMine(row-1, column);    // top middle
+    checkMine(row-1, column+1);  // top right
+
+    //level
+    checkMine(row, column-1);  // left
+    checkMine(row, column+1);  // right
+
+    //bottom 3 
+    checkMine(row+1, column-1); // bottom left
+    checkMine(row+1, column);   // bottom middle
+    checkMine(row+1, column+1); // bottom right
+  }
+
+  if (tilesClicked == rows * columns - minesCount) {
+    document.getElementById("mines-count").innerText = "Cleared"
+    gameOver = true;
+  }
+
 }
 
 function checkTile(row, column) {
-  console.log("checkTile activated");
   if (row < 0 || row >= rows || column < 0 || column >= rows) {
     return 0;
   }
-  console.log(minesLocation);
-  console.log(row.toString() + "-" + column.toString())
   if (minesLocation.includes(row.toString() + "-" + column.toString())) {
     return 1;
   }
