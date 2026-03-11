@@ -5,8 +5,8 @@ body {
 }
 
 #board {
-  width: 400px;
-  height: 400px;
+  width: 450px;
+  height: 450px;
   border: 10px solid darkgray;
   background-color: lightgray;
 

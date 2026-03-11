@@ -1,8 +1,8 @@
 var board = [];
-var rows = 8;
-var columns = 8;
+var rows = 9;
+var columns = 9;
 
-var minesCount = 5;
+var minesCount = 10;
 var minesLocation = []; // "2-2", "3-4". "2-1"
 
 var tilesClicked = 0;
